@@ -2,7 +2,6 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
@@ -23,11 +22,8 @@ public class GestionCartes {
 		if (liste.isEmpty()) {
 			throw new IllegalStateException("La liste doit etre vide");
 		}
-		ListIterator<T> iterator = liste.listIterator();
 		int index = random.nextInt(liste.size());
-		for (int indexe = index; indexe > 0 && iterator.hasNext(); indexe--) {
-			iterator.next();
-		}
+		ListIterator<T> iterator = liste.listIterator(index);
 		T element = iterator.next();
 		iterator.remove();
 		return element;
@@ -63,10 +59,10 @@ public class GestionCartes {
 		if (liste.isEmpty()) {
 			return result;
 		}
-		result.add(liste.get(0));
-		for (int i = 1; i < liste.size(); i++) {
-			if (!liste.get(i).equals(liste.get(i - 1))) {
-				result.add(liste.get(i));
+		for (int j = 0; j < liste.size(); j++) {
+			if (!result.contains(liste.get(j))) {
+				for (int i = 0; i < Collections.frequency(liste, liste.get(j)); i++)
+					result.add(liste.get(j));
 			}
 		}
 		return result;
@@ -76,8 +72,24 @@ public class GestionCartes {
 		if (liste.isEmpty()) {
 			return true;
 		}
-		Iterator<T> firstIterator = liste.iterator();
-		
+		for (ListIterator<T> it1 = liste.listIterator(); it1.hasNext();) {
+			T lastValue = it1.next();
+			T currentValue = it1.next();
+			int currentIndice = it1.nextIndex();
+			if (!lastValue.equals(currentValue) && rechercheElem(liste, lastValue, currentIndice)) {
+					return false;
+				}
+				lastValue = currentValue;
+			}
 		return true;
+	}
+
+	public static <T> boolean rechercheElem(List<T> liste, T lastValue, int currentIndice) {
+		for (ListIterator<T> it2 = liste.listIterator(currentIndice); it2.hasNext();) {
+			if (it2.next().equals(lastValue)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -20,7 +20,7 @@ public class Borne extends Carte {
 		return false;
 	}
 
-	private int getKm() {
+	public int getKm() {
 		return km;
 	}
 }
